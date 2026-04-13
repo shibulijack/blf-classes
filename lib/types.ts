@@ -21,6 +21,7 @@ export interface Class {
   tutor_contact: string | null;
   fee: string | null;
   max_students: number | null;
+  image_url: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;

@@ -120,7 +120,7 @@ export default function ProfilePage() {
   }
 
   const inputClass =
-    "w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 text-sm";
+    "w-full px-4 py-3 glass-input rounded-xl focus:outline-none text-sm";
 
   return (
     <div>
@@ -128,7 +128,7 @@ export default function ProfilePage() {
 
       <div className="px-4 py-6 space-y-6">
         {/* Apartment info */}
-        <div className="bg-blue-50 rounded-2xl p-4 text-center">
+        <div className="glass-card rounded-2xl p-4 text-center">
           <p className="text-sm text-blue-600">Apartment</p>
           <p className="text-2xl font-bold text-blue-700">{apartment}</p>
         </div>
@@ -156,11 +156,11 @@ export default function ProfilePage() {
         </div>
 
         {/* Change PIN */}
-        <div className="border-t border-gray-100 pt-6">
+        <div className="border-t border-gray-100 dark:border-gray-700/50 pt-6">
           {!showPinChange ? (
             <button
               onClick={() => { setShowPinChange(true); setShowHouseholdReset(false); }}
-              className="w-full py-2.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+              className="w-full py-2.5 text-sm font-medium text-gray-600 glass-chip rounded-xl hover:bg-white/70 transition-colors"
             >
               Change My PIN
             </button>
@@ -205,11 +205,11 @@ export default function ProfilePage() {
 
         {/* Reset household member's PIN */}
         {householdMembers.length > 0 && (
-          <div className="border-t border-gray-100 pt-6">
+          <div className="border-t border-gray-100 dark:border-gray-700/50 pt-6">
             {!showHouseholdReset ? (
               <button
                 onClick={() => { setShowHouseholdReset(true); setShowPinChange(false); }}
-                className="w-full py-2.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+                className="w-full py-2.5 text-sm font-medium text-gray-600 glass-chip rounded-xl hover:bg-white/70 transition-colors"
               >
                 Reset Household Member&apos;s PIN
               </button>
@@ -223,8 +223,8 @@ export default function ProfilePage() {
                       <button
                         key={member.id}
                         onClick={() => setSelectedMember(member)}
-                        className="w-full flex items-center gap-3 px-4 py-3 bg-white border border-gray-200 rounded-xl
-                          hover:border-blue-400 hover:bg-blue-50 transition-colors text-left"
+                        className="w-full flex items-center gap-3 px-4 py-3 glass-card rounded-xl
+                          hover:bg-white/80 transition-all text-left"
                       >
                         <div className="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
                           <span className="text-blue-600 font-semibold text-sm">
@@ -293,7 +293,7 @@ export default function ProfilePage() {
         {isAdmin && (
           <Link
             href="/admin"
-            className="block w-full py-2.5 text-center text-sm font-medium text-amber-700 bg-amber-50 rounded-xl hover:bg-amber-100 transition-colors"
+            className="block w-full py-2.5 text-center text-sm font-medium text-amber-700 glass-chip rounded-xl hover:bg-amber-50/50 transition-colors"
           >
             Admin Panel
           </Link>
@@ -302,7 +302,7 @@ export default function ProfilePage() {
         {/* Logout */}
         <button
           onClick={handleLogout}
-          className="w-full py-2.5 text-sm font-medium text-red-600 bg-red-50 rounded-xl hover:bg-red-100 transition-colors"
+          className="w-full py-2.5 text-sm font-medium text-red-600 glass-chip rounded-xl hover:bg-red-50/50 transition-colors"
         >
           Logout
         </button>

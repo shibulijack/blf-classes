@@ -46,9 +46,8 @@ export function SearchInput() {
         defaultValue={search}
         onChange={(e) => handleChange(e.target.value)}
         placeholder="Search classes or tutors..."
-        className="w-full pl-10 pr-4 py-2.5 bg-gray-100 rounded-xl text-sm
-          focus:outline-none focus:ring-2 focus:ring-blue-200 focus:bg-white
-          placeholder:text-gray-400 transition-colors"
+        className="w-full pl-10 pr-4 py-2.5 glass-input rounded-xl text-sm
+          focus:outline-none placeholder:text-gray-400 transition-colors"
       />
     </div>
   );

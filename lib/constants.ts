@@ -45,11 +45,32 @@ export const TIME_OPTIONS: string[] = (() => {
 })();
 
 export const CATEGORY_COLORS: Record<Category, string> = {
-  dance: "bg-pink-100 text-pink-700",
-  music: "bg-purple-100 text-purple-700",
-  art: "bg-orange-100 text-orange-700",
-  sports: "bg-green-100 text-green-700",
-  academics: "bg-blue-100 text-blue-700",
-  wellness: "bg-teal-100 text-teal-700",
-  other: "bg-gray-100 text-gray-700",
+  dance: "bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300",
+  music: "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
+  art: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300",
+  sports: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
+  academics: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+  wellness: "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300",
+  other: "bg-gray-100 text-gray-700 dark:bg-gray-800/40 dark:text-gray-300",
+};
+
+// Emoji placeholders for category thumbnails
+export const CATEGORY_EMOJI: Record<Category, string> = {
+  dance: "\ud83d\udc83",
+  music: "\ud83c\udfb5",
+  art: "\ud83c\udfa8",
+  sports: "\u26bd",
+  academics: "\ud83d\udcda",
+  wellness: "\ud83e\uddd8",
+  other: "\ud83d\udccb",
+};
+
+export const CATEGORY_BG: Record<Category, string> = {
+  dance: "bg-pink-50 dark:bg-pink-900/30",
+  music: "bg-purple-50 dark:bg-purple-900/30",
+  art: "bg-orange-50 dark:bg-orange-900/30",
+  sports: "bg-green-50 dark:bg-green-900/30",
+  academics: "bg-blue-50 dark:bg-blue-900/30",
+  wellness: "bg-teal-50 dark:bg-teal-900/30",
+  other: "bg-gray-50 dark:bg-gray-800/30",
 };

@@ -165,9 +165,8 @@ export function AuthForm() {
               placeholder="e.g., M051"
               autoFocus
               autoComplete="off"
-              className="w-full px-4 py-3 text-lg border-2 border-gray-200 rounded-xl
-                focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200
-                uppercase placeholder:normal-case placeholder:text-gray-400"
+              className="w-full px-4 py-3 text-lg glass-input rounded-xl
+                focus:outline-none uppercase placeholder:normal-case placeholder:text-gray-400"
             />
           </div>
           <button
@@ -193,8 +192,8 @@ export function AuthForm() {
               <button
                 key={profile.id}
                 onClick={() => handlePickProfile(profile)}
-                className="w-full flex items-center gap-3 px-4 py-3 bg-white border-2 border-gray-200 rounded-xl
-                  hover:border-blue-400 hover:bg-blue-50 active:bg-blue-100 transition-colors text-left"
+                className="w-full flex items-center gap-3 px-4 py-3 glass-card rounded-xl
+                  hover:bg-white/80 active:bg-white/90 transition-all text-left"
               >
                 <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
                   <span className="text-blue-600 font-semibold text-sm">
@@ -208,8 +207,8 @@ export function AuthForm() {
           <button
             onClick={handleAddNewProfile}
             className="w-full flex items-center justify-center gap-2 py-3 text-sm font-medium
-              text-blue-600 border-2 border-dashed border-blue-200 rounded-xl
-              hover:bg-blue-50 transition-colors"
+              text-blue-600 border-2 border-dashed border-blue-300/50 rounded-xl
+              hover:bg-blue-50/50 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -306,9 +305,8 @@ export function AuthForm() {
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="How others will see you"
               autoFocus
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl
-                focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200
-                placeholder:text-gray-400"
+              className="w-full px-4 py-3 glass-input rounded-xl
+                focus:outline-none placeholder:text-gray-400"
             />
           </div>
           <div>

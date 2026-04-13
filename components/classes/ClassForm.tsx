@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useRef } from "react";
 import { CATEGORIES, DAYS_OF_WEEK, AGE_GROUPS, TIME_OPTIONS } from "@/lib/constants";
 import { createClass, updateClass } from "@/lib/classes/actions";
+import { uploadClassImage } from "@/lib/classes/image";
 import { Class, Category } from "@/lib/types";
 import { PageHeader } from "@/components/layout/PageHeader";
 
@@ -24,7 +25,6 @@ export function ClassForm({ mode, classData }: ClassFormProps) {
 
   // Step 1 — mandatory fields
   const [title, setTitle] = useState(classData?.title || "");
-  const [category, setCategory] = useState<Category>(classData?.category || "other");
   const [days, setDays] = useState<string[]>(classData?.day_of_week || []);
   const existingTime = parseTimeSlot(classData?.time_slot || null);
   const [startTime, setStartTime] = useState(existingTime.start);
@@ -32,14 +32,18 @@ export function ClassForm({ mode, classData }: ClassFormProps) {
   const [location, setLocation] = useState(classData?.location || "");
 
   // Step 2 — optional fields
+  const [category, setCategory] = useState<Category>(classData?.category || "other");
   const [description, setDescription] = useState(classData?.description || "");
   const [ageGroup, setAgeGroup] = useState(classData?.age_group || "");
   const [tutorName, setTutorName] = useState(classData?.tutor_name || "");
   const [tutorContact, setTutorContact] = useState(classData?.tutor_contact || "");
   const [fee, setFee] = useState(classData?.fee || "");
   const [maxStudents, setMaxStudents] = useState(classData?.max_students?.toString() || "");
+  const [imageUrl, setImageUrl] = useState(classData?.image_url || "");
+  const [imagePreview, setImagePreview] = useState(classData?.image_url || "");
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // In edit mode, show both steps together
   const isEdit = mode === "edit";
 
   function toggleDay(day: string) {
@@ -66,6 +70,42 @@ export function ClassForm({ mode, classData }: ClassFormProps) {
     setStep(2);
   }
 
+  async function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Image must be under 5MB.");
+      return;
+    }
+
+    // Show preview immediately
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
+    setError("");
+    setUploading(true);
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const result = await uploadClassImage(formData);
+    setUploading(false);
+
+    if (result.error) {
+      setError(result.error);
+      setImagePreview(imageUrl); // revert to previous
+    } else if (result.url) {
+      setImageUrl(result.url);
+      setImagePreview(result.url);
+    }
+  }
+
+  function removeImage() {
+    setImageUrl("");
+    setImagePreview("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
   function handleSubmit() {
     const err = validateStep1();
     if (err) {
@@ -88,6 +128,7 @@ export function ClassForm({ mode, classData }: ClassFormProps) {
       tutor_contact: tutorContact,
       fee,
       max_students: maxStudents,
+      image_url: imageUrl,
     };
 
     startTransition(async () => {
@@ -100,20 +141,18 @@ export function ClassForm({ mode, classData }: ClassFormProps) {
   }
 
   const inputClass =
-    "w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 text-sm";
+    "w-full px-4 py-3 glass-input rounded-xl focus:outline-none text-sm";
   const labelClass = "block text-sm font-medium text-gray-700 mb-1.5";
 
-  // Get the index of startTime to filter endTime options
   const startIdx = TIME_OPTIONS.indexOf(startTime);
 
   return (
     <div>
       <PageHeader
         title={isEdit ? "Edit Class" : "Add Class"}
-        showBack
+        showBack={isEdit}
       />
 
-      {/* Step indicator for create mode */}
       {!isEdit && (
         <div className="px-4 pt-4 flex items-center gap-2">
           <div className={`h-1 flex-1 rounded-full ${step >= 1 ? "bg-blue-600" : "bg-gray-200"}`} />
@@ -122,14 +161,12 @@ export function ClassForm({ mode, classData }: ClassFormProps) {
       )}
 
       <div className="px-4 py-6 space-y-5">
-        {/* STEP 1: Mandatory fields — always shown in edit mode, shown on step 1 in create mode */}
         {(isEdit || step === 1) && (
           <>
             {!isEdit && (
               <p className="text-sm text-gray-500">Basic details about the class</p>
             )}
 
-            {/* Title */}
             <div>
               <label className={labelClass}>
                 Class Title <span className="text-red-400">*</span>
@@ -144,7 +181,6 @@ export function ClassForm({ mode, classData }: ClassFormProps) {
               />
             </div>
 
-            {/* Days */}
             <div>
               <label className={labelClass}>
                 Days <span className="text-red-400">*</span>
@@ -158,7 +194,7 @@ export function ClassForm({ mode, classData }: ClassFormProps) {
                     className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                       days.includes(d.value)
                         ? "bg-gray-900 text-white"
-                        : "bg-gray-100 text-gray-600"
+                        : "glass-chip text-gray-600"
                     }`}
                   >
                     {d.label}
@@ -167,7 +203,6 @@ export function ClassForm({ mode, classData }: ClassFormProps) {
               </div>
             </div>
 
-            {/* Time Range */}
             <div>
               <label className={labelClass}>
                 Time <span className="text-red-400">*</span>
@@ -205,7 +240,6 @@ export function ClassForm({ mode, classData }: ClassFormProps) {
               </div>
             </div>
 
-            {/* Location */}
             <div>
               <label className={labelClass}>
                 Location <span className="text-red-400">*</span>
@@ -221,7 +255,6 @@ export function ClassForm({ mode, classData }: ClassFormProps) {
           </>
         )}
 
-        {/* STEP 2: Optional fields — always shown in edit mode, shown on step 2 in create mode */}
         {(isEdit || step === 2) && (
           <>
             {!isEdit && (
@@ -237,7 +270,54 @@ export function ClassForm({ mode, classData }: ClassFormProps) {
               </div>
             )}
 
-            {/* Category */}
+            {/* Image upload */}
+            <div>
+              <label className={labelClass}>Photo</label>
+              {imagePreview ? (
+                <div className="relative w-full h-40 rounded-xl overflow-hidden bg-gray-100">
+                  <img
+                    src={imagePreview}
+                    alt="Class preview"
+                    className="w-full h-full object-cover"
+                  />
+                  {uploading && (
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                      <span className="text-white text-sm font-medium">Uploading...</span>
+                    </div>
+                  )}
+                  {!uploading && (
+                    <button
+                      type="button"
+                      onClick={removeImage}
+                      className="absolute top-2 right-2 w-7 h-7 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full h-28 border-2 border-dashed border-white/40 rounded-xl flex flex-col items-center justify-center gap-1 text-gray-400 glass-chip hover:border-blue-300/50 hover:text-blue-500 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.41a2.25 2.25 0 013.182 0l2.909 2.91m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                  </svg>
+                  <span className="text-xs">Add a photo</span>
+                </button>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleImageSelect}
+                className="hidden"
+              />
+            </div>
+
             <div>
               <label className={labelClass}>Category</label>
               <div className="flex flex-wrap gap-2">
@@ -249,7 +329,7 @@ export function ClassForm({ mode, classData }: ClassFormProps) {
                     className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                       category === cat.value
                         ? "bg-blue-600 text-white"
-                        : "bg-gray-100 text-gray-600"
+                        : "glass-chip text-gray-600"
                     }`}
                   >
                     {cat.label}
@@ -258,7 +338,6 @@ export function ClassForm({ mode, classData }: ClassFormProps) {
               </div>
             </div>
 
-            {/* Age Group */}
             <div>
               <label className={labelClass}>Age Group</label>
               <div className="flex flex-wrap gap-2">
@@ -270,7 +349,7 @@ export function ClassForm({ mode, classData }: ClassFormProps) {
                     className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                       ageGroup === ag
                         ? "bg-blue-600 text-white"
-                        : "bg-gray-100 text-gray-600"
+                        : "glass-chip text-gray-600"
                     }`}
                   >
                     {ag}
@@ -279,7 +358,6 @@ export function ClassForm({ mode, classData }: ClassFormProps) {
               </div>
             </div>
 
-            {/* Description */}
             <div>
               <label className={labelClass}>Description</label>
               <textarea
@@ -291,7 +369,6 @@ export function ClassForm({ mode, classData }: ClassFormProps) {
               />
             </div>
 
-            {/* Tutor */}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className={labelClass}>Tutor Name</label>
@@ -315,7 +392,6 @@ export function ClassForm({ mode, classData }: ClassFormProps) {
               </div>
             </div>
 
-            {/* Fee & Max Students */}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className={labelClass}>Monthly Fees</label>
@@ -348,7 +424,6 @@ export function ClassForm({ mode, classData }: ClassFormProps) {
           </div>
         )}
 
-        {/* Buttons */}
         {!isEdit && step === 1 && (
           <div className="space-y-3">
             <button
@@ -376,7 +451,7 @@ export function ClassForm({ mode, classData }: ClassFormProps) {
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={isPending}
+            disabled={isPending || uploading}
             className="w-full py-3 px-4 bg-blue-600 text-white font-semibold rounded-xl
               hover:bg-blue-700 active:bg-blue-800 disabled:bg-gray-300 disabled:cursor-not-allowed
               transition-colors"

@@ -35,7 +35,7 @@ export function AddToHomeScreen() {
   if (!show) return null;
 
   return (
-    <div className="bg-blue-600 text-white px-4 py-2.5 flex items-center gap-3">
+    <div className="bg-blue-600/80 backdrop-blur-md text-white px-4 py-2.5 flex items-center gap-3">
       <div className="flex-1 text-xs leading-snug">
         {isIOS ? (
           <>

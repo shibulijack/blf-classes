@@ -9,6 +9,7 @@ import {
   getReportedClasses,
   resolveReport,
   adminDeleteClass,
+  searchClasses,
 } from "@/lib/admin/actions";
 
 interface Resident {
@@ -34,7 +35,19 @@ interface Report {
   tutor_contact: string | null;
 }
 
-type Tab = "pin-reset" | "reports";
+interface ClassResult {
+  id: string;
+  title: string;
+  category: string;
+  tutor_name: string | null;
+  location: string | null;
+  is_active: boolean;
+  created_at: string;
+  creator_name: string;
+  creator_apartment: string;
+}
+
+type Tab = "reports" | "classes" | "pin-reset";
 
 export default function AdminPage() {
   const [isPending, startTransition] = useTransition();
@@ -54,6 +67,12 @@ export default function AdminPage() {
   const [reports, setReports] = useState<Report[]>([]);
   const [reportsLoaded, setReportsLoaded] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+
+  // Classes state
+  const [classQuery, setClassQuery] = useState("");
+  const [classes, setClasses] = useState<ClassResult[]>([]);
+  const [classSearched, setClassSearched] = useState(false);
+  const [confirmClassDelete, setConfirmClassDelete] = useState<string | null>(null);
 
   useEffect(() => {
     loadReports();
@@ -118,7 +137,7 @@ export default function AdminPage() {
     });
   }
 
-  function handleDeleteClass(classId: string) {
+  function handleDeleteClass(classId: string, source: "report" | "classes") {
     setMessage("");
     setError("");
     startTransition(async () => {
@@ -126,10 +145,27 @@ export default function AdminPage() {
       if (result.error) {
         setError(result.error);
       } else {
-        setReports((prev) => prev.filter((r) => r.class_id !== classId));
-        setConfirmDelete(null);
+        if (source === "report") {
+          setReports((prev) => prev.filter((r) => r.class_id !== classId));
+          setConfirmDelete(null);
+        } else {
+          setClasses((prev) => prev.filter((c) => c.id !== classId));
+          setConfirmClassDelete(null);
+        }
         setMessage("Class deleted");
       }
+    });
+  }
+
+  function handleClassSearch() {
+    if (!classQuery.trim()) return;
+    setMessage("");
+    setError("");
+    setConfirmClassDelete(null);
+    startTransition(async () => {
+      const results = await searchClasses(classQuery.trim());
+      setClasses(results);
+      setClassSearched(true);
     });
   }
 
@@ -145,33 +181,26 @@ export default function AdminPage() {
 
       {/* Tabs */}
       <div className="px-4 pt-4 flex gap-2">
-        <button
-          onClick={() => switchTab("reports")}
-          className={`flex-1 py-2 text-sm font-medium rounded-xl transition-colors ${
-            tab === "reports"
-              ? "bg-amber-600 text-white"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-          }`}
-        >
-          Reports
-          {reportsLoaded && reports.length > 0 && (
-            <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${
-              tab === "reports" ? "bg-amber-500" : "bg-red-100 text-red-600"
-            }`}>
-              {reports.length}
-            </span>
-          )}
-        </button>
-        <button
-          onClick={() => switchTab("pin-reset")}
-          className={`flex-1 py-2 text-sm font-medium rounded-xl transition-colors ${
-            tab === "pin-reset"
-              ? "bg-amber-600 text-white"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-          }`}
-        >
-          PIN Reset
-        </button>
+        {(["reports", "classes", "pin-reset"] as Tab[]).map((t) => (
+          <button
+            key={t}
+            onClick={() => switchTab(t)}
+            className={`flex-1 py-2 text-sm font-medium rounded-xl transition-colors ${
+              tab === t
+                ? "bg-amber-600 text-white"
+                : "glass-chip text-gray-600 hover:bg-white/70"
+            }`}
+          >
+            {t === "reports" ? "Reports" : t === "classes" ? "Classes" : "PIN Reset"}
+            {t === "reports" && reportsLoaded && reports.length > 0 && (
+              <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${
+                tab === "reports" ? "bg-amber-500" : "bg-red-100 text-red-600"
+              }`}>
+                {reports.length}
+              </span>
+            )}
+          </button>
+        ))}
       </div>
 
       <div className="px-4 py-6 space-y-4">
@@ -192,9 +221,8 @@ export default function AdminPage() {
               reports.map((report) => (
                 <div
                   key={report.id}
-                  className="bg-white border border-gray-200 rounded-2xl p-4 space-y-3"
+                  className="glass-card rounded-2xl p-4 space-y-3"
                 >
-                  {/* Class info */}
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-gray-900 text-sm truncate">
@@ -206,8 +234,6 @@ export default function AdminPage() {
                       </p>
                     </div>
                   </div>
-
-                  {/* Report details */}
                   <div className="bg-red-50 rounded-xl p-3">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-xs font-medium text-red-700 bg-red-100 px-2 py-0.5 rounded-full">
@@ -225,8 +251,6 @@ export default function AdminPage() {
                       })}
                     </p>
                   </div>
-
-                  {/* Actions */}
                   {confirmDelete === report.class_id ? (
                     <div className="bg-red-50 border border-red-200 rounded-xl p-3 space-y-2">
                       <p className="text-sm font-medium text-red-800">
@@ -235,12 +259,12 @@ export default function AdminPage() {
                       <div className="flex gap-2">
                         <button
                           onClick={() => setConfirmDelete(null)}
-                          className="flex-1 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg"
+                          className="flex-1 py-2 text-sm font-medium text-gray-600 glass-chip rounded-lg"
                         >
                           Cancel
                         </button>
                         <button
-                          onClick={() => handleDeleteClass(report.class_id)}
+                          onClick={() => handleDeleteClass(report.class_id, "report")}
                           disabled={isPending}
                           className="flex-1 py-2 text-sm font-medium text-white bg-red-600 rounded-lg disabled:bg-gray-300"
                         >
@@ -254,7 +278,7 @@ export default function AdminPage() {
                         href={`/classes/${report.class_id}`}
                         className="flex-1 py-2 text-center text-sm font-medium text-blue-600 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors"
                       >
-                        View Class
+                        View
                       </a>
                       <button
                         onClick={() => handleDismiss(report.id)}
@@ -267,12 +291,112 @@ export default function AdminPage() {
                         onClick={() => setConfirmDelete(report.class_id)}
                         className="flex-1 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-xl hover:bg-red-100 transition-colors"
                       >
-                        Delete Class
+                        Delete
                       </button>
                     </div>
                   )}
                 </div>
               ))
+            )}
+          </>
+        )}
+
+        {/* ===== CLASSES TAB ===== */}
+        {tab === "classes" && (
+          <>
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm text-amber-800">
+              Search and manage any class. Search by title, tutor, or location.
+            </div>
+
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={classQuery}
+                onChange={(e) => setClassQuery(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleClassSearch()}
+                placeholder="Search classes..."
+                className="flex-1 px-4 py-2.5 glass-input rounded-xl text-sm
+                  focus:outline-none"
+              />
+              <button
+                onClick={handleClassSearch}
+                disabled={isPending || !classQuery.trim()}
+                className="px-4 py-2.5 bg-blue-600 text-white font-medium rounded-xl text-sm
+                  hover:bg-blue-700 disabled:bg-gray-300 transition-colors shrink-0"
+              >
+                {isPending ? "..." : "Search"}
+              </button>
+            </div>
+
+            {classSearched && (
+              <div className="space-y-2">
+                {classes.length === 0 ? (
+                  <p className="text-sm text-gray-400 text-center py-4">No classes found</p>
+                ) : (
+                  classes.map((cls) => (
+                    <div
+                      key={cls.id}
+                      className="glass-card rounded-xl p-4 space-y-2"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-gray-900 text-sm truncate">{cls.title}</h3>
+                          <p className="text-xs text-gray-400 mt-0.5">
+                            by {cls.creator_name} ({cls.creator_apartment})
+                            {cls.tutor_name && ` \u00b7 Tutor: ${cls.tutor_name}`}
+                          </p>
+                          {cls.location && (
+                            <p className="text-xs text-gray-400">{cls.location}</p>
+                          )}
+                        </div>
+                        <span className={`shrink-0 text-xs font-medium px-2 py-0.5 rounded-full ${
+                          cls.is_active ? "bg-green-50 text-green-600" : "bg-gray-100 text-gray-500"
+                        }`}>
+                          {cls.is_active ? "Active" : "Inactive"}
+                        </span>
+                      </div>
+
+                      {confirmClassDelete === cls.id ? (
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-3 space-y-2">
+                          <p className="text-sm font-medium text-red-800">
+                            Delete &quot;{cls.title}&quot;? This cannot be undone.
+                          </p>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => setConfirmClassDelete(null)}
+                              className="flex-1 py-2 text-sm font-medium text-gray-600 glass-chip rounded-lg"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              onClick={() => handleDeleteClass(cls.id, "classes")}
+                              disabled={isPending}
+                              className="flex-1 py-2 text-sm font-medium text-white bg-red-600 rounded-lg disabled:bg-gray-300"
+                            >
+                              {isPending ? "..." : "Confirm Delete"}
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex gap-2">
+                          <a
+                            href={`/classes/${cls.id}`}
+                            className="flex-1 py-2 text-center text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                          >
+                            View
+                          </a>
+                          <button
+                            onClick={() => setConfirmClassDelete(cls.id)}
+                            className="flex-1 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
             )}
           </>
         )}
@@ -284,7 +408,6 @@ export default function AdminPage() {
               Reset PINs for any resident. Search by apartment number or name.
             </div>
 
-            {/* Search */}
             <div className="flex gap-2">
               <input
                 type="text"
@@ -292,8 +415,8 @@ export default function AdminPage() {
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 placeholder="Search apartment or name..."
-                className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm
-                  focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                className="flex-1 px-4 py-2.5 glass-input rounded-xl text-sm
+                  focus:outline-none"
               />
               <button
                 onClick={handleSearch}
@@ -305,7 +428,6 @@ export default function AdminPage() {
               </button>
             </div>
 
-            {/* Results */}
             {searched && !selectedResident && (
               <div className="space-y-2">
                 {residents.length === 0 ? (
@@ -315,7 +437,7 @@ export default function AdminPage() {
                     <button
                       key={r.id}
                       onClick={() => { setSelectedResident(r); setNewPin(""); setConfirmPin(""); setError(""); setMessage(""); }}
-                      className="w-full flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-xl
+                      className="w-full flex items-center justify-between px-4 py-3 glass-card rounded-xl
                         hover:border-blue-400 hover:bg-blue-50 transition-colors text-left"
                     >
                       <div className="flex items-center gap-3">
@@ -340,9 +462,8 @@ export default function AdminPage() {
               </div>
             )}
 
-            {/* PIN reset form */}
             {selectedResident && (
-              <div className="bg-white border border-gray-200 rounded-2xl p-4 space-y-4">
+              <div className="glass-card rounded-2xl p-4 space-y-4">
                 <div className="text-center">
                   <p className="text-sm text-gray-500">Reset PIN for</p>
                   <p className="font-semibold text-gray-900">{selectedResident.display_name}</p>

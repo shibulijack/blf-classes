@@ -36,8 +36,8 @@ export function VerifyButton({
       disabled={isPending}
       className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all active:scale-95 ${
         optimistic.verified
-          ? "bg-green-600 text-white"
-          : "bg-green-50 text-green-700 border border-green-200"
+          ? "bg-green-600/90 text-white shadow-md shadow-green-600/20"
+          : "glass-chip dark:!bg-slate-800/60 dark:!border-white/10 text-green-700 dark:text-green-400"
       }`}
     >
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">

@@ -108,6 +108,33 @@ export async function resolveReport(reportId: string) {
   return { success: true };
 }
 
+export async function searchClasses(query: string) {
+  await requireAdmin();
+
+  const supabase = getSupabase();
+  const { data } = await supabase
+    .from("classes")
+    .select("id, title, category, tutor_name, location, is_active, created_at, residents!created_by(apartment, display_name)")
+    .or(`title.ilike.%${query}%,tutor_name.ilike.%${query}%,location.ilike.%${query}%`)
+    .order("created_at", { ascending: false })
+    .limit(20);
+
+  return (data || []).map((cls) => {
+    const creator = cls.residents as unknown as { apartment: string; display_name: string };
+    return {
+      id: cls.id,
+      title: cls.title,
+      category: cls.category,
+      tutor_name: cls.tutor_name,
+      location: cls.location,
+      is_active: cls.is_active,
+      created_at: cls.created_at,
+      creator_name: creator?.display_name || "",
+      creator_apartment: creator?.apartment || "",
+    };
+  });
+}
+
 export async function adminDeleteClass(classId: string) {
   await requireAdmin();
 

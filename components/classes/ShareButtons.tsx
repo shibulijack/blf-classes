@@ -63,7 +63,7 @@ export function ShareButtons({ cls }: ShareButtonsProps) {
       <span className="text-xs text-gray-400 mr-1">Share</span>
       <button
         onClick={shareWhatsApp}
-        className="flex items-center justify-center w-9 h-9 rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
+        className="flex items-center justify-center w-9 h-9 rounded-full bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/50 transition-colors"
         aria-label="Share on WhatsApp"
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -72,7 +72,7 @@ export function ShareButtons({ cls }: ShareButtonsProps) {
       </button>
       <button
         onClick={shareTelegram}
-        className="flex items-center justify-center w-9 h-9 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 transition-colors"
+        className="flex items-center justify-center w-9 h-9 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-500 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
         aria-label="Share on Telegram"
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -82,7 +82,7 @@ export function ShareButtons({ cls }: ShareButtonsProps) {
       {hasNativeShare && (
         <button
           onClick={shareNative}
-          className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors"
+          className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-700/30 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors"
           aria-label="Share"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">

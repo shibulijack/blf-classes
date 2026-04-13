@@ -51,9 +51,8 @@ export function PinInput({ value, onChange, disabled }: PinInputProps) {
           onKeyDown={(e) => handleKeyDown(i, e)}
           onPaste={i === 0 ? handlePaste : undefined}
           disabled={disabled}
-          className="w-14 h-14 text-center text-2xl font-bold border-2 border-gray-200 rounded-xl
-            focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200
-            disabled:bg-gray-50 disabled:text-gray-400 transition-colors"
+          className="w-14 h-14 text-center text-2xl font-bold glass-input rounded-xl
+            focus:outline-none disabled:opacity-50 disabled:text-gray-400 transition-colors"
           aria-label={`PIN digit ${i + 1}`}
         />
       ))}

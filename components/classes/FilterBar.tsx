@@ -26,8 +26,8 @@ function ScrollRow({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative">
       {showLeft && (
-        <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none flex items-center">
-          <svg className="w-4 h-4 text-gray-400 ml-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+        <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white/70 dark:from-gray-900/70 to-transparent z-10 pointer-events-none flex items-center">
+          <svg className="w-4 h-4 text-gray-400 dark:text-gray-500 ml-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
           </svg>
         </div>
@@ -39,8 +39,8 @@ function ScrollRow({ children }: { children: React.ReactNode }) {
         {children}
       </div>
       {showRight && (
-        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none flex items-center justify-end">
-          <svg className="w-4 h-4 text-gray-400 mr-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white/70 dark:from-gray-900/70 to-transparent z-10 pointer-events-none flex items-center justify-end">
+          <svg className="w-4 h-4 text-gray-400 dark:text-gray-500 mr-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
           </svg>
         </div>
@@ -77,8 +77,8 @@ export function FilterBar() {
           onClick={() => updateParam("category", "")}
           className={`shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
             !category
-              ? "bg-blue-600 text-white"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              ? "bg-blue-600/90 text-white"
+              : "glass-chip text-gray-600 hover:bg-white/70"
           }`}
         >
           All
@@ -91,8 +91,8 @@ export function FilterBar() {
             }
             className={`shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
               category === cat.value
-                ? "bg-blue-600 text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                ? "bg-blue-600/90 text-white"
+                : "glass-chip text-gray-600 hover:bg-white/70"
             }`}
           >
             {cat.label}
@@ -106,8 +106,8 @@ export function FilterBar() {
           onClick={() => updateParam("day", "")}
           className={`shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
             !day
-              ? "bg-gray-900 text-white"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              ? "bg-gray-900/85 text-white"
+              : "glass-chip text-gray-600 hover:bg-white/70"
           }`}
         >
           Any day
@@ -118,8 +118,8 @@ export function FilterBar() {
             onClick={() => updateParam("day", day === d.value ? "" : d.value)}
             className={`shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
               day === d.value
-                ? "bg-gray-900 text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                ? "bg-gray-900/85 text-white"
+                : "glass-chip text-gray-600 hover:bg-white/70"
             }`}
           >
             {d.label}

@@ -7,7 +7,7 @@ export default async function LoginPage() {
   if (session) redirect("/classes");
 
   return (
-    <div className="min-h-dvh flex flex-col items-center justify-center px-6 bg-gradient-to-b from-blue-50 to-white">
+    <div className="min-h-dvh flex flex-col items-center justify-center px-6">
       <div className="w-full max-w-sm">
         <div className="text-center mb-10">
           <img

@@ -62,7 +62,7 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-bottom z-50">
+    <nav className="fixed bottom-0 left-0 right-0 glass-strong safe-bottom z-50">
       <div className="max-w-lg mx-auto flex justify-around items-center h-16">
         {NAV_ITEMS.map((item) => {
           const active = item.href === "/classes"
@@ -73,7 +73,7 @@ export function BottomNav() {
               key={item.href}
               href={item.href}
               className={`flex flex-col items-center justify-center min-w-[64px] py-1 transition-colors ${
-                active ? "text-blue-600" : "text-gray-400 hover:text-gray-600"
+                active ? "text-blue-600 dark:text-blue-400" : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
               }`}
             >
               {item.icon(active)}

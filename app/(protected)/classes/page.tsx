@@ -5,6 +5,8 @@ import { getClasses } from "@/lib/classes/queries";
 import { ClassCard } from "@/components/classes/ClassCard";
 import { FilterBar } from "@/components/classes/FilterBar";
 import { SearchInput } from "@/components/classes/SearchInput";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { Logo } from "@/components/layout/Logo";
 import { redirect } from "next/navigation";
 
 interface Props {
@@ -28,11 +30,17 @@ export default async function ClassesPage({ searchParams }: Props) {
 
   return (
     <div>
-      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100 safe-top">
+      <div className="sticky top-0 z-40 glass-strong safe-top">
         <div className="px-4 pt-2 pb-3">
-          <div className="flex flex-col items-center mb-3">
-            <img src="/icons/logo.webp" alt="BLF" className="h-7 w-auto rounded" />
-            <h1 className="text-sm font-semibold text-gray-900 mt-0.5">Classes</h1>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Logo className="h-7 w-auto rounded shrink-0" />
+              <svg className="w-4 h-4 text-gray-300 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
+              <h1 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Classes</h1>
+            </div>
+            <ThemeToggle />
           </div>
           <Suspense>
             <SearchInput />
@@ -78,7 +86,7 @@ export default async function ClassesPage({ searchParams }: Props) {
         )}
 
         {/* Add class nudge */}
-        <div className="mt-6 mb-4 mx-auto text-center bg-blue-50 border border-blue-100 rounded-2xl p-5">
+        <div className="mt-6 mb-4 mx-auto text-center glass-card rounded-2xl p-5">
           <p className="text-sm text-gray-700 font-medium">
             Know a class that&apos;s not listed here?
           </p>

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import { ServiceWorkerRegistrar } from "@/components/layout/ServiceWorkerRegistrar";
+import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -27,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.webmanifest" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -35,8 +36,10 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="BLF Classes" />
       </head>
       <body className={`${geistSans.variable} antialiased`}>
-        {children}
-        <ServiceWorkerRegistrar />
+        <ThemeProvider>
+          {children}
+          <ServiceWorkerRegistrar />
+        </ThemeProvider>
       </body>
     </html>
   );

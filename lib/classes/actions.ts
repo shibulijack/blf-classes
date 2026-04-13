@@ -18,6 +18,7 @@ interface ClassFormData {
   tutor_contact: string;
   fee: string;
   max_students: string;
+  image_url: string;
 }
 
 export async function createClass(formData: ClassFormData) {
@@ -43,6 +44,7 @@ export async function createClass(formData: ClassFormData) {
       max_students: formData.max_students
         ? parseInt(formData.max_students)
         : null,
+      image_url: formData.image_url || null,
     })
     .select("id")
     .single();
@@ -88,6 +90,7 @@ export async function updateClass(classId: string, formData: ClassFormData) {
       max_students: formData.max_students
         ? parseInt(formData.max_students)
         : null,
+      image_url: formData.image_url || null,
       updated_at: new Date().toISOString(),
     })
     .eq("id", classId);
