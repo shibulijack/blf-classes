@@ -1,14 +1,17 @@
 import { notFound, redirect } from "next/navigation";
+import Image from "next/image";
+import dynamic from "next/dynamic";
 import { getSession } from "@/lib/auth/session";
 import { getClassById } from "@/lib/classes/queries";
 import { InterestButton } from "@/components/classes/InterestButton";
 import { VerifyButton } from "@/components/classes/VerifyButton";
-import { ReportButton } from "@/components/classes/ReportButton";
 import { ShareButtons } from "@/components/classes/ShareButtons";
 import { StatBadge } from "@/components/classes/StatBadge";
-import { ClassOwnerActions } from "@/components/classes/ClassOwnerActions";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { CATEGORY_COLORS, DAYS_OF_WEEK } from "@/lib/constants";
+
+const ReportButton = dynamic(() => import("@/components/classes/ReportButton").then((m) => m.ReportButton));
+const ClassOwnerActions = dynamic(() => import("@/components/classes/ClassOwnerActions").then((m) => m.ClassOwnerActions));
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -96,9 +99,11 @@ export default async function ClassDetailPage({ params }: Props) {
         {/* Class image */}
         {cls.image_url && (
           <div className="rounded-2xl overflow-hidden">
-            <img
+            <Image
               src={cls.image_url}
               alt={cls.title}
+              width={512}
+              height={192}
               className="w-full h-48 object-cover"
             />
           </div>

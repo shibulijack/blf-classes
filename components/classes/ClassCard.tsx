@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ClassWithMeta } from "@/lib/types";
 import { CATEGORY_COLORS, CATEGORY_EMOJI, CATEGORY_BG, DAYS_OF_WEEK } from "@/lib/constants";
 
@@ -20,7 +21,7 @@ export function ClassCard({ cls }: ClassCardProps) {
           {/* Thumbnail */}
           <div className="shrink-0 w-20 h-20 rounded-xl overflow-hidden">
             {cls.image_url ? (
-              <img src={cls.image_url} alt="" className="w-full h-full object-cover" />
+              <Image src={cls.image_url} alt="" width={80} height={80} className="w-full h-full object-cover" />
             ) : (
               <div className={`w-full h-full flex items-center justify-center text-3xl ${CATEGORY_BG[cls.category]}`}>
                 {CATEGORY_EMOJI[cls.category]}

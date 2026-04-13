@@ -1,7 +1,9 @@
 import { notFound, redirect } from "next/navigation";
+import dynamic from "next/dynamic";
 import { getSession } from "@/lib/auth/session";
 import { getClassById } from "@/lib/classes/queries";
-import { ClassForm } from "@/components/classes/ClassForm";
+
+const ClassForm = dynamic(() => import("@/components/classes/ClassForm").then((m) => m.ClassForm));
 
 interface Props {
   params: Promise<{ id: string }>;
